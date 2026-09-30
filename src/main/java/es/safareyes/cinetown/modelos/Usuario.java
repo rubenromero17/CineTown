@@ -9,7 +9,8 @@ import lombok.*;
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
-@Table(name="Usuario", schema = "cinetown")
+@Entity
+@Table(name="usuario")
 public class Usuario {
     public enum rol {
         admin,

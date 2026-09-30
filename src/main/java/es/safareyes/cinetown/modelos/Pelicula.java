@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 
 @Entity
-@Table(name="Pelicula")
+@Table(name="pelicula")
 public class Pelicula {
 
     @Id
