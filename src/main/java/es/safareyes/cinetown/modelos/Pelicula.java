@@ -2,6 +2,7 @@ package es.safareyes.cinetown.modelos;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.mapping.Set;
 
 @Getter
 @Setter
@@ -36,6 +37,5 @@ public class Pelicula {
 
     @Column(name = "publicada", nullable = false)
     private Boolean publicada;
-
 
 }
