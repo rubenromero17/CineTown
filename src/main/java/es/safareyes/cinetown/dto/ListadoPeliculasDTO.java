@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class ListadoPeliculasDTO {
     private String clasificacion_edad;
     private Boolean publicada;
 
-    private GenerosPeliculas genero;
+    Set<GeneroDTO> generos;
 
 
 }

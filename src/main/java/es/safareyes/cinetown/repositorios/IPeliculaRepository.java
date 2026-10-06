@@ -10,4 +10,10 @@ import java.util.List;
 @Repository
 public interface IPeliculaRepository extends JpaRepository<Pelicula, Integer> {
 
+    List<ListadoPeliculasDTO>findAllProjectedBy();
+
+    List<ListadoPeliculasDTO>findByTitulo(String titulo);
+
+
+
 }

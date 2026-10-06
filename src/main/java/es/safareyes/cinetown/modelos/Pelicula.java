@@ -38,4 +38,13 @@ public class Pelicula {
     @Column(name = "publicada", nullable = false)
     private Boolean publicada;
 
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "generos_peliculas",
+            joinColumns = @JoinColumn(name = "id_pelicula", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "id_genero", nullable = false)
+    )
+    private java.util.Set<Genero> generos;
+
+
 }
