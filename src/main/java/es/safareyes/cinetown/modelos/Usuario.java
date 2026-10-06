@@ -36,10 +36,4 @@ public class Usuario {
     @Column(name = "email", length = 100, nullable = false)
     private String email;
 
-
-
-
-
-
-
 }
