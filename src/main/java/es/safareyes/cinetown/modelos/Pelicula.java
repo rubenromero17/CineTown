@@ -46,5 +46,8 @@ public class Pelicula {
     )
     private java.util.Set<Genero> generos;
 
+    @OneToMany(mappedBy = "pelicula", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private java.util.Set<Sesion> sesiones;
+
 
 }
