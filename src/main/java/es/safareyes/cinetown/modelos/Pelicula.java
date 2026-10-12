@@ -2,7 +2,7 @@ package es.safareyes.cinetown.modelos;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.mapping.Set;
+import java.util.Set;
 
 @Getter
 @Setter

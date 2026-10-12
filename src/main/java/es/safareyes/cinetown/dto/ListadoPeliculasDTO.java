@@ -13,6 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class ListadoPeliculasDTO {
+
     private Integer id;
 
     private String titulo;
