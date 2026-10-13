@@ -16,7 +16,7 @@ import java.util.Date;
 @Table(name="compra")
 public class Compra {
 
-    public enum estado {
+    public enum Estado {
         comprada,
         reservada,
         cancelada
@@ -38,7 +38,7 @@ public class Compra {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
-    private estado Estado;
+    private Estado estado;
 
     @Column(name = "email", nullable = false)
     private String email;

@@ -18,5 +18,4 @@ public interface IGeneroRepository extends JpaRepository<GenerosPeliculas, Integ
         order by g.nombre asc 
     """)
     List<GeneroConTotalPeliculasDTO> findGeneroConTotalPeliculas();
-
 }

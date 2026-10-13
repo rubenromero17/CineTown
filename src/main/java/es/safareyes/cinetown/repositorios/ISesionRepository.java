@@ -15,26 +15,27 @@ import java.util.List;
 public interface ISesionRepository extends JpaRepository<Sesion, Integer> {
 
     @EntityGraph(attributePaths = {"pelicula", "sala"})
-    List<Sesion> findByDiaAndPelicula_IdPelicula(LocalDate dia, Long idPelicula);
+    List<Sesion> findByDiaAndPelicula_Id(LocalDate dia, Integer id);
+
     @EntityGraph(attributePaths = {"pelicula", "sala"})
     List<Sesion> findByDia(LocalDate dia);
+
     @EntityGraph(attributePaths = {"pelicula", "sala"})
-    List<Sesion> findByPelicula_IdPelicula(Long idPelicula);
+    List<Sesion> findByPelicula_Id(Integer id);
 
     @Query(nativeQuery = true, value = """
-    SELECT 
-        s.id_sesion AS idSesion,
-        p.titulo AS tituloPelicula,
-        sa.numero_sala AS numeroSala,
-        sa.capacidad AS capacidad,
-        s.asientos_disponibles AS asientosDisponibles,
-        ROUND(((sa.capacidad - s.asientos_disponibles)::numeric / sa.capacidad::numeric) * 100, 2) AS porcentajeOcupacion
-    FROM sesion s
-    JOIN pelicula p ON s.id_pelicula = p.id_pelicula
-    JOIN salas sa ON s.id_salas = sa.id_salas
-    WHERE s.dia = :fecha
-    ORDER BY porcentajeOcupacion DESC
-""")
+        SELECT 
+            s.id_sesion AS idSesion,
+            p.titulo AS tituloPelicula,
+            sa.numero_sala AS numeroSala,
+            sa.capacidad AS capacidad,
+            s.aientos_disponibles AS asientosDisponibles,
+            ROUND(((sa.capacidad - s.aientos_disponibles)::numeric / sa.capacidad::numeric) * 100, 2) AS porcentajeOcupacion
+        FROM sesion s
+        JOIN pelicula p ON s.id_pelicula = p.id_pelicula
+        JOIN salas sa ON s.id_salas = sa.id_salas
+        WHERE s.dia = :fecha
+        ORDER BY porcentajeOcupacion DESC
+    """)
     List<OcupacionSesionDTO> obtenerOcupacionPorFecha(@Param("fecha") String fecha);
-
 }

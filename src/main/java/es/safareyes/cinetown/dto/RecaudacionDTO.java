@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,6 +14,6 @@ import lombok.NoArgsConstructor;
 public class RecaudacionDTO {
     private Integer id;
     private String titulo;
-    private Integer entradasVendidas;
-    private Integer recaudacionTotal;
+    private Long entradasVendidas;
+    private BigDecimal recaudacionTotal;
 }

@@ -1,6 +1,5 @@
 package es.safareyes.cinetown.dto;
 
-import es.safareyes.cinetown.modelos.SesionDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

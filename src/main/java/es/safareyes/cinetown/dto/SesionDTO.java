@@ -1,13 +1,10 @@
-package es.safareyes.cinetown.modelos;
+package es.safareyes.cinetown.dto;
 
-import es.safareyes.cinetown.dto.DetallePeliculaDTO;
-import es.safareyes.cinetown.dto.SalaDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data

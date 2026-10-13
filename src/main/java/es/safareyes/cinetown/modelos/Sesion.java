@@ -34,10 +34,11 @@ public class Sesion {
     @Column(name = "fin_sesion", nullable = false)
     private Integer finSesion;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_pelicula", nullable = false)
     private Pelicula pelicula;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_salas", nullable = false)
     private Salas sala;
 
