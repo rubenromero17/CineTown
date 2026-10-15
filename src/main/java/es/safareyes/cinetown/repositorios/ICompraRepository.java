@@ -18,17 +18,11 @@ public interface ICompraRepository extends JpaRepository<Compra, Integer> {
 
     Page<Compra> findByEmailIgnoreCaseOrderByFechaCompraDesc(String email, Pageable pageable);
 
-    @Query("""
-        SELECT 
-            p.id AS id,
-            p.titulo AS titulo,
-            SUM(c.cantidad) AS entradasVendidas,
-            SUM(c.total) AS recaudacionTotal
-        FROM Compra c
-        JOIN c.sesion s
-        JOIN s.pelicula p
-        WHERE p.id = :idPelicula AND c.estado = 'comprada'
-        GROUP BY p.id, p.titulo
-    """)
+    @Query("SELECT NEW es.safareyes.cinetown.dto.RecaudacionDTO(p.id, p.titulo, SUM(c.cantidad), SUM(c.total)) " +
+            "FROM Compra c " +
+            "JOIN c.sesion s " +
+            "JOIN s.pelicula p " +
+            "WHERE p.id = :idPelicula AND c.estado = 'comprada' " +
+            "GROUP BY p.id, p.titulo")
     Optional<RecaudacionDTO> obtenerRecaudacionPelicula(@Param("idPelicula") Integer idPelicula);
 }

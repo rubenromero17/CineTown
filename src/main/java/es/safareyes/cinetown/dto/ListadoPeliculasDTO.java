@@ -1,6 +1,6 @@
 package es.safareyes.cinetown.dto;
 
-import es.safareyes.cinetown.modelos.GenerosPeliculas;
+import es.safareyes.cinetown.modelos.Genero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +20,7 @@ public class ListadoPeliculasDTO {
     private String clasificacion_edad;
     private Boolean publicada;
 
-    Set<GeneroDTO> generos;
+    private Set<Genero> generos;
 
 
 }

@@ -7,10 +7,9 @@ import java.util.Set;
 @Getter
 @Setter
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
 @NoArgsConstructor
-
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // Solo usa los campos marcados explícitamente
+@ToString(exclude = {"generos", "sesiones"})      // Excluye las colecciones para evitar bucles y errores Lazy
 @Entity
 @Table(name="pelicula")
 public class Pelicula {
@@ -18,6 +17,7 @@ public class Pelicula {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pelicula")
+    @EqualsAndHashCode.Include // El equals y hashCode solo se basarán en el ID
     private Integer id;
 
     @Column(name = "titulo", length = 100, nullable = false)
@@ -48,6 +48,4 @@ public class Pelicula {
 
     @OneToMany(mappedBy = "pelicula", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private java.util.Set<Sesion> sesiones;
-
-
 }

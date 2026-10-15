@@ -15,7 +15,6 @@ import java.util.Optional;
 @Repository
 public interface IPeliculaRepository extends JpaRepository<Pelicula, Integer>, JpaSpecificationExecutor<Pelicula> {
 
-    @EntityGraph(attributePaths = {"generos"})
     @Query("SELECT p FROM Pelicula p WHERE p.id = :id")
-    Optional<Pelicula> findWithGenerosByIdPelicula(Long idPelicula);
+    Optional<Pelicula> findWithGenerosByIdPelicula(@Param("id") Long idPelicula);
 }

@@ -3,15 +3,15 @@ package es.safareyes.cinetown.modelos;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@EqualsAndHashCode
-@ToString
-@NoArgsConstructor
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
-@Table(name="sesion")
+@Table(name = "sesion")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Sesion {
 
     @Id
@@ -19,8 +19,16 @@ public class Sesion {
     @Column(name = "id_sesion")
     private Integer id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_pelicula", nullable = false)
+    private Pelicula pelicula;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_salas", nullable = false)
+    private Salas sala;
+
     @Column(name = "precio_base", nullable = false)
-    private Double precioBase;
+    private BigDecimal precioBase;
 
     @Column(name = "dia", nullable = false)
     private String dia;
@@ -32,15 +40,5 @@ public class Sesion {
     private Integer horaSesion;
 
     @Column(name = "fin_sesion", nullable = false)
-    private Integer finSesion;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_pelicula", nullable = false)
-    private Pelicula pelicula;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_salas", nullable = false)
-    private Salas sala;
-
-
+    private Long finSesion;
 }

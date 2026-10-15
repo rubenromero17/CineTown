@@ -3,6 +3,7 @@ package es.safareyes.cinetown.modelos;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Getter
@@ -34,7 +35,7 @@ public class Compra {
     private Integer cantidad;
 
     @Column(name = "total", nullable = false)
-    private Double total;
+    private BigDecimal total;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)

@@ -10,32 +10,33 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface ISesionRepository extends JpaRepository<Sesion, Integer> {
 
     @EntityGraph(attributePaths = {"pelicula", "sala"})
-    List<Sesion> findByDiaAndPelicula_Id(LocalDate dia, Integer id);
+    List<Sesion> findByDiaAndPelicula_Id(String dia, Integer id);
 
     @EntityGraph(attributePaths = {"pelicula", "sala"})
-    List<Sesion> findByDia(LocalDate dia);
+    List<Sesion> findByDia(String dia);
 
     @EntityGraph(attributePaths = {"pelicula", "sala"})
     List<Sesion> findByPelicula_Id(Integer id);
 
-    @Query(nativeQuery = true, value = """
+    @Query(value = """
         SELECT 
             s.id_sesion AS idSesion,
             p.titulo AS tituloPelicula,
             sa.numero_sala AS numeroSala,
             sa.capacidad AS capacidad,
-            s.aientos_disponibles AS asientosDisponibles,
-            ROUND(((sa.capacidad - s.aientos_disponibles)::numeric / sa.capacidad::numeric) * 100, 2) AS porcentajeOcupacion
-        FROM sesion s
-        JOIN pelicula p ON s.id_pelicula = p.id_pelicula
-        JOIN salas sa ON s.id_salas = sa.id_salas
-        WHERE s.dia = :fecha
+            s.asientos_disponibles AS asientosDisponibles,
+            ROUND(((sa.capacidad - s.asientos_disponibles)::numeric / sa.capacidad::numeric) * 100, 2) AS porcentajeOcupacion 
+        FROM sesion s 
+        JOIN pelicula p ON s.id_pelicula = p.id_pelicula 
+        JOIN salas sa ON s.id_salas = sa.id_salas 
+        WHERE s.dia = :dia 
         ORDER BY porcentajeOcupacion DESC
-    """)
-    List<OcupacionSesionDTO> obtenerOcupacionPorFecha(@Param("fecha") String fecha);
+        """, nativeQuery = true)
+    List<Map<String, Object>> obtenerOcupacionPorFecha(@Param("dia") String dia);
 }
