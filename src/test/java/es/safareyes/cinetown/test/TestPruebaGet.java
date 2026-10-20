@@ -54,7 +54,7 @@ public class TestPruebaGet {
         Pageable pageable = PageRequest.of(0, 5);
         Page<Pelicula> resultado = peliculaRepository.findAll(spec, pageable);
 
-        System.out.println("--- [TEST 1] Películas encontradas: " + resultado.getContent());
+        System.out.println("[TEST 1] Películas encontradas: " + resultado.getContent());
 
         assertThat(resultado).isNotNull();
         assertThat(resultado.getContent()).isNotEmpty();
@@ -67,7 +67,7 @@ public class TestPruebaGet {
     void testFindWithGenerosByIdPelicula() {
         Optional<Pelicula> peliculaOpt = peliculaRepository.findWithGenerosByIdPelicula(1L);
 
-        System.out.println("--- [TEST 2] Película con géneros: " + peliculaOpt);
+        System.out.println("[TEST 2] Película con géneros: " + peliculaOpt);
 
         assertThat(peliculaOpt).isPresent();
         Pelicula pelicula = peliculaOpt.get();
@@ -80,7 +80,7 @@ public class TestPruebaGet {
     void testFindGeneroConTotalPeliculas() {
         List<GeneroConTotalPeliculasDTO> resultado = generoRepository.findGeneroConTotalPeliculas();
 
-        System.out.println("--- [TEST 6] Géneros con total de películas: " + resultado);
+        System.out.println("[TEST 6] Géneros con total de películas: " + resultado);
 
         assertThat(resultado).isNotNull();
         assertThat(resultado).isNotEmpty();
@@ -157,11 +157,11 @@ public class TestPruebaGet {
     }
 
     @Test
-    @DisplayName("GET 15: Obtener recaudación total por película (Q2 + Q5)")
+    @DisplayName("GET 15: Obtener recaudación total por película")
     void testObtenerRecaudacionPelicula() {
         Optional<RecaudacionDTO> informeOpt = compraRepository.obtenerRecaudacionPelicula(1);
 
-        System.out.println("--- [TEST 15] Recaudación película: " + informeOpt);
+        System.out.println("[TEST 15] Recaudación película: " + informeOpt);
 
         assertThat(informeOpt).isPresent();
         RecaudacionDTO informe = informeOpt.get();
@@ -176,7 +176,7 @@ public class TestPruebaGet {
         String fecha = "2026-10-01";
         List<Map<String, Object>> resultados = sesionRepository.obtenerOcupacionPorFecha(fecha);
 
-        System.out.println("--- [TEST Ocupación] Resultados: " + resultados);
+        System.out.println("[TEST Ocupación] Resultados: " + resultados);
 
         assertThat(resultados).isNotEmpty();
         Map<String, Object> primeraOcupacion = resultados.get(0);

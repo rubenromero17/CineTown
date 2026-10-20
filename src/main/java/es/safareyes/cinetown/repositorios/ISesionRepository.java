@@ -25,14 +25,14 @@ public interface ISesionRepository extends JpaRepository<Sesion, Integer> {
     List<Sesion> findByPelicula_Id(Integer id);
 
     @Query(value = """
-        SELECT 
-            s.id_sesion AS idSesion,
-            p.titulo AS tituloPelicula,
-            sa.numero_sala AS numeroSala,
-            sa.capacidad AS capacidad,
-            s.asientos_disponibles AS asientosDisponibles,
-            ROUND(((sa.capacidad - s.asientos_disponibles)::numeric / sa.capacidad::numeric) * 100, 2) AS porcentajeOcupacion 
-        FROM sesion s 
+        select 
+            s.id_sesion as idSesion,
+            p.titulo as tituloPelicula,
+            sa.numero_sala as numeroSala,
+            sa.capacidad as capacidad,
+            s.asientos_disponibles as asientosDisponibles,
+            round(((sa.capacidad - s.asientos_disponibles)::numeric / sa.capacidad::numeric) * 100, 2) as porcentajeOcupacion 
+        from sesion s 
         JOIN pelicula p ON s.id_pelicula = p.id_pelicula 
         JOIN salas sa ON s.id_salas = sa.id_salas 
         WHERE s.dia = :dia 
