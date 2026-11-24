@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class PeliculaController {
     private final PeliculaService peliculaService;
 
-    @GetMapping
+    @GetMapping("/peliculas")
     public Page<PeliculaResponse> listar(
             @RequestParam(required = false) String titulo,
             @RequestParam(required = false) String genero,

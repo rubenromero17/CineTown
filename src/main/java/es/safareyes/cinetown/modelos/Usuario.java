@@ -12,10 +12,10 @@ import lombok.*;
 @Entity
 @Table(name="usuario")
 public class Usuario {
-    public enum rol {
-        admin,
-        taquilla,
-        cliente
+    public enum Rol {
+        ADMIN,
+        TAQUILLA,
+        CLIENTE
     }
 
     @Id
@@ -31,9 +31,19 @@ public class Usuario {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "rol", nullable = false)
-    private rol rol;
+    private Rol rol;
 
     @Column(name = "email", length = 100, nullable = false)
     private String email;
 
+    @Column(name = "activo", nullable = false)
+    private Boolean activo;
+
+    @PrePersist
+    void alCrear() {
+        if (activo == null) {
+            activo = true;
+        }
+
+    }
 }
