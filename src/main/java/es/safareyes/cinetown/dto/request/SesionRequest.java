@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-
 public record SesionRequest(
         @NotNull(message = "Debe especificar la película")
         Long idPelicula,

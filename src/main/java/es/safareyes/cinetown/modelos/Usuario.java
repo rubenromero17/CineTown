@@ -44,6 +44,5 @@ public class Usuario {
         if (activo == null) {
             activo = true;
         }
-
     }
 }
