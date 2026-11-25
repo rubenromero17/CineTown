@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface IGeneroRepository extends JpaRepository<Genero, Integer> {
 
+
     Optional<Genero> findByNombreIgnoreCase(String nombre);
 
     boolean existsByNombreIgnoreCase(String nombre);
@@ -22,7 +23,7 @@ public interface IGeneroRepository extends JpaRepository<Genero, Integer> {
             COUNT(p)
         )
         FROM Genero g
-        LEFT JOIN g.pelicula p ON p.publicada = true
+        LEFT JOIN g.peliculas p ON p.publicada = true
         GROUP BY g.id, g.nombre
         ORDER BY g.nombre ASC
     """)

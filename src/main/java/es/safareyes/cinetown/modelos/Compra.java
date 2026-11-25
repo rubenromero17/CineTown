@@ -12,7 +12,7 @@ import java.util.Date;
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
-
+@Builder
 @Entity
 @Table(name="compra")
 public class Compra {

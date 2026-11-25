@@ -65,7 +65,46 @@ public class TestPruebaGet {
     @Transactional
     @DisplayName("GET 2: Obtener película por ID cargando sus géneros con EntityGraph (Q8)")
     void testFindWithGenerosByIdPelicula() {
-        Optional<Pelicula> peliculaOpt = peliculaRepository.findWithGenerosByIdPelicula(1L);
+        Optional<Pelicula> peliculaOpt = peliculaRepository.findWithGenerosByIdPelicula(package es.safareyes.cinetown.mapper;
+
+import es.safareyes.cinetown.dto.DetallePeliculaDTO;
+import es.safareyes.cinetown.dto.GeneroDTO;
+import es.safareyes.cinetown.dto.ListadoPeliculasDTO;
+import es.safareyes.cinetown.modelos.Genero;
+import es.safareyes.cinetown.modelos.Pelicula;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
+import java.util.List;
+import java.util.Set;
+
+@Mapper(componentModel = "spring")
+public interface PeliculaMapper {
+
+    @Mapping(target = "generos", source = "generos")
+    ListadoPeliculasDTO toListadoDto(Pelicula pelicula);
+
+    @Mapping(target = "id", source = "idPelicula")
+    @Mapping(target = "clasificacionEdad", source = "clasificacion_edad")
+    DetallePeliculaDTO toDetalleDto(Pelicula pelicula);
+
+    @Mapping(target = "idPelicula", ignore = true)
+    @Mapping(target = "generos", ignore = true)
+    @Mapping(target = "sesiones", ignore = true)
+    @Mapping(target = "clasificacion_edad", source = "clasificacionEdad")
+    Pelicula toEntity(DetallePeliculaDTO dto);
+
+    GeneroDTO toGeneroDto(Genero genero);
+
+    default List<String> mapGeneros(Set<Genero> generos) {
+        if (generos == null) {
+            return List.of();
+        }
+        return generos.stream()
+                .map(Genero::getNombre)
+                .toList();
+    }
+}1L);
 
         System.out.println("[TEST 2] Película con géneros: " + peliculaOpt);
 

@@ -1,6 +1,5 @@
 package es.safareyes.cinetown.dto;
 
-
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,14 +17,15 @@ public class DetallePeliculaDTO {
 
     @NotBlank(message = "El título de la película no puede estar vacío")
     @Size(max = 100, message = "El título de la película no puede exceder los 100 caracteres")
-    private  String titulo;
+    private String titulo;
 
     @NotBlank(message = "La sinopsis de la película no puede estar vacía")
     @Size(max = 1000, message = "La sinopsis de la película no puede exceder los 1000 caracteres")
-    private String sipnosis;
+    private String sinopsis;
 
-    @NotNull(message = "La duración de la película no puede ser nula")
-    @Min(value = 1, message = "La duración de la película debe ser al menos 1 minuto")
+    @NotNull(message = "La duración es obligatoria")
+    @Min(value = 1, message = "La duración debe ser al menos 1 minuto")
+    @Max(value = 300, message = "La duración no puede superar los 300 minutos")
     private Integer duracion;
 
     @NotNull(message = "El año de la película no puede ser nulo")
@@ -33,12 +33,15 @@ public class DetallePeliculaDTO {
     private Integer anio;
 
     @NotBlank(message = "La clasificación de edad de la película no puede estar vacía")
-    @Pattern(regexp = "^(A|7|12|16|18)$", message = "La clasificación de edad debe ser A, 7, 12, 16 o 18")
+    @Pattern(
+            regexp = "^(TP|MAYORES_7|MAYORES_12|MAYORES_16|MAYORES_18)$",
+            message = "La clasificación de edad debe ser TP, MAYORES_7, MAYORES_12, MAYORES_16 o MAYORES_18"
+    )
     private String clasificacionEdad;
 
     @NotNull(message = "El estado de la publicación de la película no puede ser nulo")
     private Boolean publicada;
 
+    @NotEmpty(message = "Toda película debe tener al menos un género")
     private Set<GeneroDTO> generos;
-
 }

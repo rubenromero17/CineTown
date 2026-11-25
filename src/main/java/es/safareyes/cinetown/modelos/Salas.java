@@ -10,8 +10,8 @@ import lombok.*;
 @EqualsAndHashCode
 @ToString
 @NoArgsConstructor
-
 @Entity
+@Builder
 @Table(name="salas")
 public class Salas {
     @Id
@@ -22,7 +22,7 @@ public class Salas {
     @Column(name = "capacidad", nullable = false)
     private Integer capacidad;
 
-    @Column(name = "numero_sala", nullable = false)
+    @Column(name = "numero_sala", nullable = false, unique = true)
     private Integer numeroSala;
 
 

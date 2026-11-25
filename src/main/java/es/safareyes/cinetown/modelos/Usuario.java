@@ -10,6 +10,7 @@ import lombok.*;
 @ToString
 @NoArgsConstructor
 @Entity
+@Builder
 @Table(name="usuario")
 public class Usuario {
     public enum Rol {

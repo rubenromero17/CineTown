@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Sesion {
 
     @Id
@@ -33,7 +34,7 @@ public class Sesion {
     @Column(name = "dia", nullable = false)
     private String dia;
 
-    @Column(name = "asientos_disponibles", nullable = false)
+    @Column(name = "aientos_disponibles", nullable = false)
     private Integer asientosDisponibles;
 
     @Column(name = "hora_sesion", nullable = false)
