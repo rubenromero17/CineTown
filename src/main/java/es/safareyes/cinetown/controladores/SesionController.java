@@ -2,15 +2,16 @@ package es.safareyes.cinetown.controladores;
 
 import es.safareyes.cinetown.dto.CrearSesionDTO;
 import es.safareyes.cinetown.dto.SesionDTO;
+import es.safareyes.cinetown.dto.SesionTarifaAplicadaDTO;
 import es.safareyes.cinetown.servicios.SesionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/sesiones")
@@ -22,5 +23,19 @@ public class SesionController {
     public ResponseEntity<SesionDTO> programar(@Valid @RequestBody CrearSesionDTO dto) {
         SesionDTO creada = sesionService.programar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(creada);
+    }
+
+    @GetMapping
+    public List<SesionDTO> listar(
+            @RequestParam(name = "fecha", required = false) String fecha,
+            @RequestParam(name = "peliculaId", required = false) Integer peliculaId,
+            @RequestParam(name = "soloDisponibles", required = false) Boolean soloDisponibles) {
+        LocalDate fechaParsed = (fecha != null && !fecha.isBlank()) ? LocalDate.parse(fecha) : null;
+        return sesionService.listar(fechaParsed, peliculaId, soloDisponibles);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SesionTarifaAplicadaDTO> obtenerPorId(@PathVariable Integer id) {
+        return ResponseEntity.ok(sesionService.obtenerPorId(id));
     }
 }

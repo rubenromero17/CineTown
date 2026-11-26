@@ -8,12 +8,15 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class RecaudacionDTO {
-    private Integer id;
+
+    private Integer idPelicula;
     private String titulo;
     private Long entradasVendidas;
-    private BigDecimal recaudacionTotal;
+    private Double recaudacionTotal;
+
+
 }

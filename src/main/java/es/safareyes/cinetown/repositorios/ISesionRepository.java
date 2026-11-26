@@ -12,19 +12,25 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public interface ISesionRepository extends JpaRepository<Sesion, Integer> {
+    @Override
+    @EntityGraph(attributePaths = {"pelicula", "sala"})
+    Optional<Sesion> findById(Integer id);
 
     @EntityGraph(attributePaths = {"pelicula", "sala"})
-    List<Sesion> findByDiaAndPelicula_Id(String dia, Integer id);
+    List<Sesion> findAllByOrderByDiaAscHoraSesionAsc();
 
     @EntityGraph(attributePaths = {"pelicula", "sala"})
-    List<Sesion> findByDia(String dia);
+    List<Sesion> findByDiaAndPelicula_IdOrderByHoraSesionAsc(String dia, Integer id);
 
     @EntityGraph(attributePaths = {"pelicula", "sala"})
-    List<Sesion> findByPelicula_Id(Integer id);
+    List<Sesion> findByDiaOrderByHoraSesionAsc(String dia);
 
+    @EntityGraph(attributePaths = {"pelicula", "sala"})
+    List<Sesion> findByPelicula_IdOrderByDiaAscHoraSesionAsc(Integer id);
     @Query("""
         SELECT COUNT(s) > 0
         FROM Sesion s

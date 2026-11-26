@@ -4,6 +4,7 @@ import es.safareyes.cinetown.dto.RecaudacionDTO;
 import es.safareyes.cinetown.modelos.Compra;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,7 +15,13 @@ import java.util.Optional;
 @Repository
 public interface ICompraRepository extends JpaRepository<Compra, Integer> {
 
+    boolean existsByCodigo(String codigo);
+
+    @EntityGraph(attributePaths = {"usuario", "sesion", "sesion.pelicula", "sesion.sala"})
     Optional<Compra> findByCodigo(String codigo);
+
+    @EntityGraph(attributePaths = {"usuario", "sesion", "sesion.pelicula", "sesion.sala"})
+    Optional<Compra> findByCodigoIgnoreCase(String codigo);
 
     Page<Compra> findByEmailIgnoreCaseOrderByFechaCompraDesc(String email, Pageable pageable);
 

@@ -1,17 +1,8 @@
-/*
-Miércoles (Día del espectador): 30 % de descuento (7.00 €).
-
-Sesión matinal (antes de las 14:00, excepto miércoles): 20 % de descuento (8.00 €).
-
-Fin de semana (viernes, sábado o domingo, a partir de las 14:00): 15 % de suplemento (11.50 €).
-
-Resto de días y horas: se mantiene igual que precioBase (10.00 €).
- */
-
 package es.safareyes.cinetown.servicios;
 
 import es.safareyes.cinetown.dto.CrearSesionDTO;
 import es.safareyes.cinetown.dto.SesionDTO;
+import es.safareyes.cinetown.dto.SesionTarifaAplicadaDTO;
 import es.safareyes.cinetown.mapper.SesionMapper;
 import es.safareyes.cinetown.modelos.Pelicula;
 import es.safareyes.cinetown.modelos.Salas;
@@ -21,8 +12,10 @@ import es.safareyes.cinetown.repositorios.ISalasRepository;
 import es.safareyes.cinetown.repositorios.ISesionRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -42,17 +35,59 @@ public class SesionService {
     private final SesionMapper sesionMapper;
 
     public List<SesionDTO> listar(LocalDate dia, Integer idPelicula) {
+        return listar(dia, idPelicula, null);
+    }
+
+    public List<SesionDTO> listar(LocalDate dia, Integer idPelicula, Boolean soloDisponibles) {
         List<Sesion> sesiones;
         if (dia != null && idPelicula != null) {
-            sesiones = sesionRepository.findByDiaAndPelicula_Id(dia.toString(), idPelicula);
+            sesiones = sesionRepository.findByDiaAndPelicula_IdOrderByHoraSesionAsc(dia.toString(), idPelicula);
         } else if (dia != null) {
-            sesiones = sesionRepository.findByDia(dia.toString());
+            sesiones = sesionRepository.findByDiaOrderByHoraSesionAsc(dia.toString());
         } else if (idPelicula != null) {
-            sesiones = sesionRepository.findByPelicula_Id(idPelicula);
+            sesiones = sesionRepository.findByPelicula_IdOrderByDiaAscHoraSesionAsc(idPelicula);
         } else {
-            sesiones = sesionRepository.findAll();
+            sesiones = sesionRepository.findAllByOrderByDiaAscHoraSesionAsc();
         }
+
+        if (Boolean.TRUE.equals(soloDisponibles)) {
+            sesiones = sesiones.stream()
+                    .filter(s -> s.getAsientosDisponibles() != null && s.getAsientosDisponibles() > 0)
+                    .toList();
+        }
+
+        if (sesiones.isEmpty()) {
+            throw new EntityNotFoundException(construirMensajeSinSesiones(dia, idPelicula, soloDisponibles));
+        }
+
         return sesionMapper.toDtoList(sesiones);
+    }
+
+    private String construirMensajeSinSesiones(LocalDate dia, Integer idPelicula, Boolean soloDisponibles) {
+        String sufijoLibres = Boolean.TRUE.equals(soloDisponibles) ? " con asientos libres" : "";
+
+        if (dia != null && idPelicula != null) {
+            return "No hay sesiones" + sufijoLibres + " ese día (" + dia + ") para la película con id " + idPelicula;
+        }
+        if (dia != null) {
+            return "No hay sesiones" + sufijoLibres + " programadas para el día " + dia;
+        }
+        if (idPelicula != null) {
+            return "No hay sesiones" + sufijoLibres + " programadas para la película con id " + idPelicula;
+        }
+        return "No hay sesiones" + sufijoLibres + " disponibles";
+    }
+
+    public SesionTarifaAplicadaDTO obtenerPorId(Integer id) {
+        Sesion sesion = sesionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Sesión no encontrada con id: " + id));
+
+        SesionTarifaAplicadaDTO dto = sesionMapper.toTarifaAplicadaDto(sesion);
+        LocalDate fecha = LocalDate.parse(sesion.getDia());
+        dto.setPrecioAplicado(calcularPrecioAplicado(sesion.getPrecioBase(), fecha, sesion.getHoraSesion()));
+        dto.setTarifaAplicada(obtenerDescripcionTarifa(fecha, sesion.getHoraSesion()));
+        return dto;
     }
 
     @Transactional
@@ -108,5 +143,20 @@ public class SesionService {
         }
 
         return Math.round(precio * 100.0) / 100.0;
+    }
+
+    private String obtenerDescripcionTarifa(LocalDate dia, LocalTime horaSesion) {
+        DayOfWeek diaSemana = dia.getDayOfWeek();
+
+        if (diaSemana == DayOfWeek.WEDNESDAY) {
+            return "Día del espectador (-30%)";
+        }
+        if (horaSesion.isBefore(LocalTime.of(14, 0))) {
+            return "Sesión matinal (-20%)";
+        }
+        if (diaSemana == DayOfWeek.FRIDAY || diaSemana == DayOfWeek.SATURDAY || diaSemana == DayOfWeek.SUNDAY) {
+            return "Fin de semana (+15%)";
+        }
+        return "Tarifa normal";
     }
 }
