@@ -11,9 +11,10 @@ import java.util.Optional;
 public interface ISalasRepository extends JpaRepository<Salas, Integer> {
     List<Salas> findAllById(Integer id);
 
+    List<Salas> findAllByOrderByNumeroSalaAsc();
+
     Optional<Salas> findByNumeroSala(Integer numeroSala);
 
     boolean existsByNumeroSala(Integer numeroSala);
-
 
 }

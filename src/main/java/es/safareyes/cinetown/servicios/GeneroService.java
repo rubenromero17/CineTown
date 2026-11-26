@@ -1,0 +1,21 @@
+package es.safareyes.cinetown.servicios;
+
+import es.safareyes.cinetown.dto.GeneroConTotalPeliculasDTO;
+import es.safareyes.cinetown.repositorios.IGeneroRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class GeneroService {
+
+    private final IGeneroRepository generoRepository;
+
+    public List<GeneroConTotalPeliculasDTO> listarConTotalPeliculas() {
+        return generoRepository.findGeneroConTotalPeliculas();
+    }
+}

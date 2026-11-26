@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,20 @@ public interface ISesionRepository extends JpaRepository<Sesion, Integer> {
     @EntityGraph(attributePaths = {"pelicula", "sala"})
     List<Sesion> findByPelicula_Id(Integer id);
 
+    @Query("""
+        SELECT COUNT(s) > 0
+        FROM Sesion s
+        WHERE s.sala.id = :idSala
+          AND s.dia = :dia
+          AND s.horaSesion < :finSesion
+          AND s.finSesion > :horaSesion
+    """)
+    boolean existeSolapamiento(
+            @Param("idSala") Integer idSala,
+            @Param("dia") String dia,
+            @Param("horaSesion") LocalTime horaSesion,
+            @Param("finSesion") LocalTime finSesion
+    );
     @Query(value = """
         select 
             s.id_sesion as idSesion,

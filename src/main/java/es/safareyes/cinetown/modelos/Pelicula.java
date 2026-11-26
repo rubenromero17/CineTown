@@ -2,6 +2,8 @@ package es.safareyes.cinetown.modelos;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -9,7 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="pelicula")
+@Table(name = "pelicula")
 public class Pelicula {
 
     @Id
@@ -35,13 +37,13 @@ public class Pelicula {
     @Column(name = "publicada", nullable = false)
     private Boolean publicada;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "generos_peliculas",
             joinColumns = @JoinColumn(name = "id_pelicula", nullable = false),
             inverseJoinColumns = @JoinColumn(name = "id_genero", nullable = false)
     )
-    private Set<Genero> generos;
+    private Set<Genero> generos = new HashSet<>();
 
     @OneToMany(mappedBy = "pelicula", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Sesion> sesiones;

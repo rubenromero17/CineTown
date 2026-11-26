@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class PeliculaController {
 
     private final PeliculaService peliculaService;
-
+    //Endpoint 1
     @GetMapping
     public Page<ListadoPeliculasDTO> listar(
             @RequestParam(required = false) Long idGenero,
@@ -29,15 +29,30 @@ public class PeliculaController {
 
         return peliculaService.listar(idGenero, clasificacion, titulo, publicada, pageable);
     }
-
+    //Endpoint 2
     @GetMapping("/{id}")
     public DetallePeliculaDTO obtenerPorId(@PathVariable Integer id) {
         return peliculaService.obtenerPorId(id);
     }
-
+    //Endpoint 3
     @PostMapping
     public ResponseEntity<DetallePeliculaDTO> crear(@Valid @RequestBody DetallePeliculaDTO dto) {
         DetallePeliculaDTO creada = peliculaService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(creada);
     }
+    //Endpoint 4
+    @PutMapping("/{id}")
+    public DetallePeliculaDTO modificar(@PathVariable Integer id, @Valid @RequestBody DetallePeliculaDTO dto) {
+        return peliculaService.modificar(id, dto);
+    }
+
+    //Endpoint 5
+    @PatchMapping("/{id}/publicar")
+    public DetallePeliculaDTO cambiarEstadoCartelera(
+            @PathVariable Integer id,
+            @RequestParam(required = false) Boolean publicada) {
+        return peliculaService.cambiarEstadoCartelera(id, publicada);
+    }
+
+
 }

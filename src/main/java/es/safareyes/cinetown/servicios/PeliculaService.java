@@ -30,7 +30,7 @@ public class PeliculaService {
     private final IPeliculaRepository peliculaRepository;
     private final IGeneroRepository generoRepository;
     private final PeliculaMapper peliculaMapper;
-
+//Endpoint 1: Listar películas con filtros dinámicos
     public Page<ListadoPeliculasDTO> listar(
             Long idGenero,
             String clasificacion,
@@ -54,8 +54,9 @@ public class PeliculaService {
         return peliculaMapper.toDetalleDto(pelicula);
     }
 
+//Endpoint 3: Crear película
     @Transactional
-    public DetallePeliculaDTO crear(DetallePeliculaDTO dto) {
+    public DetallePeliculaDTO crear (DetallePeliculaDTO dto) {
         if (peliculaRepository.existsByTituloIgnoreCase(dto.getTitulo().trim())) {
             throw new IllegalStateException("Ya existe una película con el título: " + dto.getTitulo());
         }
@@ -77,4 +78,48 @@ public class PeliculaService {
         Pelicula guardada = peliculaRepository.save(pelicula);
         return peliculaMapper.toDetalleDto(guardada);
     }
+
+//Endpoint 4: Modificar película
+    @Transactional
+    public DetallePeliculaDTO modificar(Integer id, DetallePeliculaDTO dto) {
+        Pelicula pelicula = peliculaRepository.findWithGenerosByIdPelicula(id)
+                .orElseThrow(() -> new EntityNotFoundException("Película no encontrada con id: " + id));
+
+        if (peliculaRepository.existsByTituloIgnoreCaseAndIdNot(dto.getTitulo().trim(), id)) {
+            throw new IllegalStateException("Ya existe otra película con el título: " + dto.getTitulo());
+        }
+
+        Set<Integer> idsGeneros = dto.getGeneros().stream()
+                .map(GeneroDTO::getId)
+                .collect(Collectors.toSet());
+
+        List<Genero> generosEncontrados = generoRepository.findAllById(idsGeneros);
+        if (generosEncontrados.size() != idsGeneros.size()) {
+            throw new EntityNotFoundException("Los generos indicados no existen");
+        }
+        pelicula.setTitulo(dto.getTitulo().trim());
+        pelicula.setSinopsis(dto.getSinopsis());
+        pelicula.setDuracion(dto.getDuracion());
+        pelicula.setAnio(dto.getAnio());
+        pelicula.setClasificacionEdad(dto.getClasificacionEdad());
+        pelicula.setPublicada(dto.getPublicada());
+        pelicula.setGeneros(new HashSet<>(generosEncontrados));
+
+        Pelicula actualizada = peliculaRepository.save(pelicula);
+        return peliculaMapper.toDetalleDto(actualizada);
+    }
+//Endpoint 5: Cambiar estado de publicación de la película
+    @Transactional
+    public DetallePeliculaDTO cambiarEstadoCartelera(Integer id, Boolean publicada) {
+        Pelicula pelicula = peliculaRepository.findWithGenerosByIdPelicula(id)
+                .orElseThrow(() -> new EntityNotFoundException("Película no encontrada con id: " + id));
+
+        boolean nuevoEstado = (publicada != null) ? publicada : !Boolean.TRUE.equals(pelicula.getPublicada());
+        pelicula.setPublicada(nuevoEstado);
+
+        Pelicula actualizada = peliculaRepository.save(pelicula);
+        return peliculaMapper.toDetalleDto(actualizada);
+    }
+
+
 }

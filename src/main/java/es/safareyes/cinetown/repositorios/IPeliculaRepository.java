@@ -18,6 +18,8 @@ public interface IPeliculaRepository extends JpaRepository<Pelicula, Integer>, J
 
     boolean existsByTituloIgnoreCase(String titulo);
 
+    boolean existsByTituloIgnoreCaseAndIdNot(String titulo, Integer id);
+
     @Override
     @EntityGraph(attributePaths = {"generos"})
     Page<Pelicula> findAll(Specification<Pelicula> spec, Pageable pageable);

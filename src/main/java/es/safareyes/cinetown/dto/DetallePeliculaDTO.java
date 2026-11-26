@@ -34,8 +34,8 @@ public class DetallePeliculaDTO {
 
     @NotBlank(message = "La clasificación de edad de la película no puede estar vacía")
     @Pattern(
-            regexp = "^(TP|MAYORES_7|MAYORES_12|MAYORES_16|MAYORES_18)$",
-            message = "La clasificación de edad debe ser TP, MAYORES_7, MAYORES_12, MAYORES_16 o MAYORES_18"
+            regexp = "^(TP|7|12|16|18)$",
+            message = "La clasificación de edad debe ser TP, 7, 12, 16 o 18"
     )
     private String clasificacionEdad;
 
