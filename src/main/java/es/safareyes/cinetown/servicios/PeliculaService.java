@@ -4,9 +4,11 @@ import es.safareyes.cinetown.FIltrosDinamicos.PeliculaSpecification;
 import es.safareyes.cinetown.dto.DetallePeliculaDTO;
 import es.safareyes.cinetown.dto.GeneroDTO;
 import es.safareyes.cinetown.dto.ListadoPeliculasDTO;
+import es.safareyes.cinetown.dto.RecaudacionDTO;
 import es.safareyes.cinetown.mapper.PeliculaMapper;
 import es.safareyes.cinetown.modelos.Genero;
 import es.safareyes.cinetown.modelos.Pelicula;
+import es.safareyes.cinetown.repositorios.ICompraRepository;
 import es.safareyes.cinetown.repositorios.IGeneroRepository;
 import es.safareyes.cinetown.repositorios.IPeliculaRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,8 +31,10 @@ public class PeliculaService {
 
     private final IPeliculaRepository peliculaRepository;
     private final IGeneroRepository generoRepository;
+    private final ICompraRepository compraRepository;
     private final PeliculaMapper peliculaMapper;
-//Endpoint 1: Listar películas con filtros dinámicos
+
+    //Endpoint 1: Listar películas con filtros dinámicos
     public Page<ListadoPeliculasDTO> listar(
             Long idGenero,
             String clasificacion,
@@ -54,9 +58,9 @@ public class PeliculaService {
         return peliculaMapper.toDetalleDto(pelicula);
     }
 
-//Endpoint 3: Crear película
+    //Endpoint 3: Crear película
     @Transactional
-    public DetallePeliculaDTO crear (DetallePeliculaDTO dto) {
+    public DetallePeliculaDTO crear(DetallePeliculaDTO dto) {
         if (peliculaRepository.existsByTituloIgnoreCase(dto.getTitulo().trim())) {
             throw new IllegalStateException("Ya existe una película con el título: " + dto.getTitulo());
         }
@@ -79,7 +83,7 @@ public class PeliculaService {
         return peliculaMapper.toDetalleDto(guardada);
     }
 
-//Endpoint 4: Modificar película
+    //Endpoint 4: Modificar película
     @Transactional
     public DetallePeliculaDTO modificar(Integer id, DetallePeliculaDTO dto) {
         Pelicula pelicula = peliculaRepository.findWithGenerosByIdPelicula(id)
@@ -108,7 +112,8 @@ public class PeliculaService {
         Pelicula actualizada = peliculaRepository.save(pelicula);
         return peliculaMapper.toDetalleDto(actualizada);
     }
-//Endpoint 5: Cambiar estado de publicación de la película
+
+    //Endpoint 5: Cambiar estado de publicación de la película
     @Transactional
     public DetallePeliculaDTO cambiarEstadoCartelera(Integer id, Boolean publicada) {
         Pelicula pelicula = peliculaRepository.findWithGenerosByIdPelicula(id)
@@ -121,5 +126,22 @@ public class PeliculaService {
         return peliculaMapper.toDetalleDto(actualizada);
     }
 
-
+    //Endpoint 6: Entradas vendidas y recaudación total de una película
+    public RecaudacionDTO obtenerRecaudacion(Integer id) {
+        Pelicula pelicula = peliculaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Película no encontrada con id: " + id));
+        return compraRepository.obtenerRecaudacionPelicula(id)
+                .map(rec -> {
+                    if (rec.getRecaudacionTotal() != null) {
+                        rec.setRecaudacionTotal(Math.round(rec.getRecaudacionTotal() * 100.0) / 100.0);
+                    }
+                    return rec;
+                })
+                .orElseGet(() -> RecaudacionDTO.builder()
+                        .idPelicula(pelicula.getId())
+                        .titulo(pelicula.getTitulo())
+                        .entradasVendidas(0L)
+                        .recaudacionTotal(0.0)
+                        .build());
+    }
 }

@@ -11,6 +11,8 @@ import es.safareyes.cinetown.repositorios.ISesionRepository;
 import es.safareyes.cinetown.repositorios.IUsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,23 +27,27 @@ import java.time.LocalTime;
 @Transactional(readOnly = true)
 public class CompraService {
 
-    private static final String CARACTERES_CODIGO = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    private static final SecureRandom RANDOM = new SecureRandom();
+    private static final String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    private static final SecureRandom secureRandom = new SecureRandom();
+    private static final int horasAntelacionCancelacion = 2;
 
     private final ICompraRepository compraRepository;
     private final ISesionRepository sesionRepository;
     private final IUsuarioRepository usuarioRepository;
     private final CompraMapper compraMapper;
 
+    public Page<CompraDTO> listarPaginado(String email, Pageable pageable) {
+        Page<Compra> pagina = (email != null && !email.isBlank())
+                ? compraRepository.findByEmailIgnoreCase(email.trim(), pageable)
+                : compraRepository.findAll(pageable);
+
+        return pagina.map(this::mapearConPrecioUnitario);
+    }
+
     public CompraDTO obtenerPorCodigo(String codigo) {
         Compra compra = compraRepository.findByCodigoIgnoreCase(codigo.trim())
                 .orElseThrow(() -> new EntityNotFoundException("Compra no encontrada con código: " + codigo));
-
-        CompraDTO dto = compraMapper.toDto(compra);
-        if (compra.getTotal() != null && compra.getCantidad() != null && compra.getCantidad() > 0) {
-            dto.setPrecioUnitario(Math.round((compra.getTotal() / compra.getCantidad()) * 100.0) / 100.0);
-        }
-        return dto;
+        return mapearConPrecioUnitario(compra);
     }
 
     @Transactional
@@ -75,11 +81,9 @@ public class CompraService {
             throw new IllegalArgumentException("El email es obligatorio cuando se realiza la compra sin usuario registrado");
         }
 
-
         LocalDate fechaSesion = LocalDate.parse(sesion.getDia());
         double precioUnitario = calcularPrecioAplicado(sesion.getPrecioBase(), fechaSesion, sesion.getHoraSesion());
         double total = Math.round((precioUnitario * dto.getCantidad()) * 100.0) / 100.0;
-
 
         sesion.setAsientosDisponibles(sesion.getAsientosDisponibles() - dto.getCantidad());
         sesionRepository.save(sesion);
@@ -102,12 +106,52 @@ public class CompraService {
         return respuesta;
     }
 
+    @Transactional
+    public CompraDTO cancelar(String codigo) {
+        Compra compra = compraRepository.findByCodigoIgnoreCase(codigo.trim())
+                .orElseThrow(() -> new EntityNotFoundException("Compra no encontrada con código: " + codigo));
+
+        if (!"comprada".equalsIgnoreCase(compra.getEstado())) {
+            throw new IllegalStateException("La compra con código " + compra.getCodigo() + " ya se encuentra cancelada");
+        }
+
+        Sesion sesion = compra.getSesion();
+        LocalDateTime inicioSesion = LocalDateTime.of(LocalDate.parse(sesion.getDia()), sesion.getHoraSesion());
+
+        if (LocalDateTime.now().isAfter(inicioSesion.minusHours(horasAntelacionCancelacion))) {
+            throw new IllegalStateException("No se puede cancelar la compra con menos de "
+                    + horasAntelacionCancelacion + " horas de antelación al inicio de la sesión");
+        }
+
+        int asientosActuales = sesion.getAsientosDisponibles() != null ? sesion.getAsientosDisponibles() : 0;
+        int asientosRestaurados = asientosActuales + compra.getCantidad();
+        if (sesion.getSala() != null && sesion.getSala().getCapacidad() != null) {
+            asientosRestaurados = Math.min(asientosRestaurados, sesion.getSala().getCapacidad());
+        }
+
+        sesion.setAsientosDisponibles(asientosRestaurados);
+        sesionRepository.save(sesion);
+
+        compra.setEstado("cancelada");
+        Compra cancelada = compraRepository.save(compra);
+
+        return mapearConPrecioUnitario(cancelada);
+    }
+
+    private CompraDTO mapearConPrecioUnitario(Compra compra) {
+        CompraDTO dto = compraMapper.toDto(compra);
+        if (compra.getTotal() != null && compra.getCantidad() != null && compra.getCantidad() > 0) {
+            dto.setPrecioUnitario(Math.round((compra.getTotal() / compra.getCantidad()) * 100.0) / 100.0);
+        }
+        return dto;
+    }
+
     private String generarCodigoUnico() {
         String codigo;
         do {
             StringBuilder sb = new StringBuilder("CMP");
             for (int i = 0; i < 5; i++) {
-                sb.append(CARACTERES_CODIGO.charAt(RANDOM.nextInt(CARACTERES_CODIGO.length())));
+                sb.append(caracteres.charAt(secureRandom.nextInt(caracteres.length())));
             }
             codigo = sb.toString();
         } while (compraRepository.existsByCodigo(codigo));

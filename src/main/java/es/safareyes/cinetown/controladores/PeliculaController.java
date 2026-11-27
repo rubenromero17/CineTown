@@ -2,6 +2,7 @@ package es.safareyes.cinetown.controladores;
 
 import es.safareyes.cinetown.dto.DetallePeliculaDTO;
 import es.safareyes.cinetown.dto.ListadoPeliculasDTO;
+import es.safareyes.cinetown.dto.RecaudacionDTO;
 import es.safareyes.cinetown.servicios.PeliculaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class PeliculaController {
 
     private final PeliculaService peliculaService;
+
     //Endpoint 1
     @GetMapping
     public Page<ListadoPeliculasDTO> listar(
@@ -29,17 +31,20 @@ public class PeliculaController {
 
         return peliculaService.listar(idGenero, clasificacion, titulo, publicada, pageable);
     }
+
     //Endpoint 2
     @GetMapping("/{id}")
     public DetallePeliculaDTO obtenerPorId(@PathVariable Integer id) {
         return peliculaService.obtenerPorId(id);
     }
+
     //Endpoint 3
     @PostMapping
     public ResponseEntity<DetallePeliculaDTO> crear(@Valid @RequestBody DetallePeliculaDTO dto) {
         DetallePeliculaDTO creada = peliculaService.crear(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(creada);
     }
+
     //Endpoint 4
     @PutMapping("/{id}")
     public DetallePeliculaDTO modificar(@PathVariable Integer id, @Valid @RequestBody DetallePeliculaDTO dto) {
@@ -54,5 +59,9 @@ public class PeliculaController {
         return peliculaService.cambiarEstadoCartelera(id, publicada);
     }
 
-
+    //Endpoint 6
+    @GetMapping("/{id}/recaudacion")
+    public ResponseEntity<RecaudacionDTO> obtenerRecaudacion(@PathVariable Integer id) {
+        return ResponseEntity.ok(peliculaService.obtenerRecaudacion(id));
+    }
 }

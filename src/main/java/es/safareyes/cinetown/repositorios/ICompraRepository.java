@@ -23,6 +23,17 @@ public interface ICompraRepository extends JpaRepository<Compra, Integer> {
     @EntityGraph(attributePaths = {"usuario", "sesion", "sesion.pelicula", "sesion.sala"})
     Optional<Compra> findByCodigoIgnoreCase(String codigo);
 
+    @Override
+    @EntityGraph(attributePaths = {"usuario", "sesion", "sesion.pelicula", "sesion.sala"})
+    Page<Compra> findAll(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"usuario", "sesion", "sesion.pelicula", "sesion.sala"})
+    Page<Compra> findByUsuario_IdOrEmailIgnoreCase(Integer idUsuario, String email, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"usuario", "sesion", "sesion.pelicula", "sesion.sala"})
+    Page<Compra> findByEmailIgnoreCase(String email, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"usuario", "sesion", "sesion.pelicula", "sesion.sala"})
     Page<Compra> findByEmailIgnoreCaseOrderByFechaCompraDesc(String email, Pageable pageable);
 
     @Query("SELECT NEW es.safareyes.cinetown.dto.RecaudacionDTO(p.id, p.titulo, SUM(c.cantidad), SUM(c.total)) " +
